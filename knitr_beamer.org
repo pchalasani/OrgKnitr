@@ -1,0 +1,86 @@
+#+TITLE:     Org + Knitr + R + Beamer
+#+AUTHOR:    Prasad Chalasani
+#+EMAIL: pchalasani@gmail.com
+#+DATE:      \today
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+XSLT:
+#+BEAMER_FRAME_LEVEL: 1
+#+startup: beamer
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [t,10pt,svgnames,compress,red,subsection=false,xcolor=pdftex,dvipsnames,table]
+#+latex_header: \usepackage{xcolor} 
+#+latex_header: \usepackage{fancyvrb} %\beamertemplatenavigationsymbolsempty
+#+latex_header: \mode<beamer> {\usetheme{Madrid}}
+
+
+#+BABEL: :session *R* :cache yes :results output graphics :exports both :tangle yes
+
+
+
+#+COLUMNS: %40ITEM %10BEAMER_env(Env) %9BEAMER_envargs(Env Args) %4BEAMER_col(Col) %10BEAMER_extra(Extra)
+
+* Get =knitr= to work with =Org-mode= and =Beamer=!
+
+   - The source for this file is =org_knitr_beamer.org=
+   - To use a =knitr= code-chunk in an =org-mode= =beamer= document,
+     enclose it between =#+begin_LATEX= and =#+end_LATEX=
+   - Any special latex headers you need, insert them at the start of
+     the =.org= document, prefixed by =#+latex_header:=
+   - Export the =.org= file to =.tex= the usual way ( =M-x
+     org-export-as-latex= or =C-c-e l=): /the knitr chunks are
+     unaffected by this/.
+   - Rename the =.tex= file to =.Rnw=
+   - In =R=, =knit()= the =.Rnw= file: =knit("~/Path/To/file.Rnw")= to
+     convert it to a =.tex= file
+   - Process the =.tex= file to =.pdf= using =pdflatex= in the usual
+     way.
+
+* =.org -> .tex -> .Rnw -> .tex -> .pdf= in one step!
+  - Copy the contents of file =org_knitr.el= from this repository into
+    your =emacs= init file (either your =~/.emacs= file or
+    your =~/.emacs.d/user/my_init.el= file).
+  - Reload the =emacs= init file
+  - Place cursor in the =.org= file, hit =F5=
+  - Or bind your own keyboard short-cut to the =ess-knitr-weave=
+    function.
+
+
+* Use =knitr= to make a 2-plot slide                               :B_normal:
+  :PROPERTIES:
+  :BEAMER_env: normal
+  :BEAMER_envargs: [plain]
+  :END:
+
+Text is nice but let's see what happens if we make a couple of plots
+in our chunk:
+
+#+begin_latex
+
+<<boring-plots,echo=FALSE,fig.width=6,fig.height=6,out.width=.45\linewidth>>=
+
+require(ggplot2)
+d <- data.frame(x = rnorm(100), y = rnorm(100))
+ggplot(d, aes(x,y)) + geom_point()
+ggplot(d, aes(x)) + geom_density()
+
+@
+#+end_latex
+   
+  
+  
+
+   
+  
+
+
+  
+

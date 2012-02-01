@@ -1,0 +1,106 @@
+#+TITLE:Using knitr in org-mode
+#+AUTHOR: Prasad Chalasani
+#+INFOJS_OPT: view:nil toc:nil
+#+OPTIONS: toc:nil
+#+LaTeX_CLASS_OPTIONS: [10pt]
+
+
+######################## KNITR-SPECIFIC #############
+# headers used by Yihui Xie to get nice output after knitr-ing:
+#+latex_header: \usepackage[sc]{mathpazo}
+#+latex_header: \usepackage[T1]{fontenc}
+#+latex_header: \usepackage{geometry}
+#+latex_header: \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+#+latex_header: \setcounter{secnumdepth}{2}
+#+latex_header: \setcounter{tocdepth}{2}
+#+latex_header: \usepackage{url}
+#+latex_header: %\usepackage{breakurl} DISABLED BECAUSE I DON'T HAVE THIS PKG
+
+
+#+BABEL: :session *R* :cache yes :results output graphics :exports both :tangle yes
+
+## KNITR initial set-up
+
+#+begin_LATEX
+<<setup,echo=FALSE,results=hide,message=FALSE,cache=TRUE>>=
+options(replace.assign=TRUE,width=90)
+knit_hooks$set(par=function(before, options, envir){if (before)
+par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3,las=1)})
+@
+#+end_LATEX
+
+Yihui Xie's new *knitr* package for R is awesome. If you're an Emacs
+~org-mode~ fan and are wondering how to get the =knitr= package to
+work under =org-mode=, then this article shows you how. It's best to
+look at the source file =knitr_article.org= from which this document was generated.
+
+First we'll generate some data using a traditional =org-mode= =R=
+code block enclosed between =+begin_src R= and =#+end_src=.
+
+#+begin_src R :exports both
+d <- data.frame(x=rnorm(100), y = rnorm(100) )
+#+end_src 
+
+Then we take advantage of =knitr= to produce 2 plots side-by-side,
+using a code-chunk enclosed between =<<...>>== and =@=. Note that we
+need to enclose all such =knitr= code-chunks between =#+begin_LATEX=
+and =#+end_LATEX=, to ensure that these are left intact when exporting to =LaTeX=.
+
+#+begin_LATEX
+<<boring-plots,echo=FALSE,dev=pdf,fig.width=5,fig.height=5,out.width=.45\linewidth,par=TRUE>>=
+## two plots side by side (option fig.show=hold)
+require(ggplot2)
+ggplot(d, aes(x,y)) + geom_point()
+ggplot(d, aes(x)) + geom_density()
+@
+#+end_LATEX
+
+Now to process this =.org= to =.tex= and then to =.pdf=, simply follow 
+these steps:
+- As this article shows, in your =.org= file, you can mix traditional =org-mode=
+  source-code blocks (enclosed between =#+begin_src R= and
+  =#+end_src=) with =knitr= code chunks, enclosed between =<<...>>==
+  and =@=. Note that =R= results from the traditional =org-mode=
+  code-blocks can be used in the =knitr= code-chunks, as the current
+  article itself shows.  
+- Wherever you need to use a =knitr= code-chunk, insert that
+  code-chunk between =#+begin_LATEX= and =#+end_LATEX=.
+- If there are any special =LaTeX= header lines you want to use to get nice
+  =knitr= output, put them at the top of your document preceded by the string
+  =#+latex_header:=
+- Now use the standard method to export your =.org= document to =LaTeX= to produce a =.tex=
+  document (either to =M_x org-export-latex= or use the keyboard
+  short-cut =C-c-e l=). Note that when you do this, /the knitr code chunks are
+  unaffected/, i.e. passed intact to the =.tex= document, since they
+  enclosed within =#+begin_LATEX= and =#+end_LATEX=.  So your  =.tex=
+  document now looks very much like a =.Rnw= (=noweb=) document, i.e. a =LaTeX= document containing some =knitr=
+  code-chunks.
+- Next, rename your =<file>.tex= document to =<file>.Rnw=.
+- In your =R= session, run =knit= on the =.Rnw= file in the usual way,
+  to produce a =.tex= file in the same directory:
+#+begin_EXAMPLE
+> knit("~/Path/To/file.Rnw")
+#+end_EXAMPLE
+- Finally, run =pdflatex= on this =.tex= file to get your =pdf= file
+  in the usual way.
+
+Sounds like too many steps? Me too. That's why I put together this
+bit of =emacs-lisp= code to do /all of these steps in one key-stroke/:
+Paste the entire emacs-lisp code in the file *org_knitr.el* from this
+repository, into your =emacs= initialization file (either your
+=~/.emacs= file or your =~/.emacs.d/user/my_init.el= file depending on
+how your emacs is set up).
+Of course, you need to have =ESS= (emacs-speaks-statistics) installed in your =emacs=. Once you load this
+initialization file into emacs, place the cursor within your =.org=
+file, and just hit =F5= to do the whole chain of
+=.org->.tex->.Rnw->.tex->.pdf= in one step!
+Or, you can bind your own keyboard short-cut to the =ess-knitr-weave= function.
+
+(Ok, I lied, I did not write the =emacs-lisp= code entirely from scratch --
+rather, parts of it were adapted from  =ess-swv.el= and the code
+for doing one-step conversion of =.Rnw -> pdf= was adapted from a post by
+Viatlie S. on the =ess-help= 
+[[https://stat.ethz.ch/pipermail/ess-help/2011-February/006658.html][mailing-list]].)
+
+
+
