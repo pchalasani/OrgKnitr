@@ -86,7 +86,7 @@ these steps:
 
 Sounds like too many steps? Me too. That's why I put together this
 bit of =emacs-lisp= code to do /all of these steps in one key-stroke/:
-Paste the entire emacs-lisp code in the file *org_knitr.el* from this
+Paste the entire emacs-lisp code in the file =org_knitr.el= from this
 repository, into your =emacs= initialization file (either your
 =~/.emacs= file or your =~/.emacs.d/user/my_init.el= file depending on
 how your emacs is set up).
