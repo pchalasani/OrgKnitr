@@ -30,7 +30,7 @@
 
 * Get =knitr= to work with =Org-mode= and =Beamer=!
 
-   - The source for this file is =org_knitr_beamer.org=
+   - The source for this file is =knitr_beamer.org=
    - To use a =knitr= code-chunk in an =org-mode= =beamer= document,
      enclose it between =#+begin_LATEX= and =#+end_LATEX=
    - Any special latex headers you need, insert them at the start of
